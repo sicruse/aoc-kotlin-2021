@@ -1,6 +1,6 @@
-# aoc-kotlin-starter
+# aoc-kotlin-2021
 
-Starter template for solving [Advent of Code](https://adventofcode.com) in [Kotlin](https://kotlinlang.org/)
+Uses starter template for solving [Advent of Code](https://adventofcode.com) in [Kotlin](https://kotlinlang.org/)
 
 ### Features
 
