@@ -4,15 +4,15 @@ import kotlin.math.absoluteValue
 
 class Day2 : Day(2) {
 
-    private val course: List<ManoeuvringInstruction> by lazy { inputList.map { code -> ManoeuvringInstruction.fromText(code) } }
+    private val course: List<Instruction> by lazy { inputList.map { code -> Instruction.fromText(code) } }
 
-    data class ManoeuvringInstruction(val maneuver: Manoeuvr, val amount: Int) {
+    data class Instruction(val maneuver: Maneuver, val amount: Int) {
         companion object {
-            fun fromText(code: String): ManoeuvringInstruction {
+            fun fromText(code: String): Instruction {
                 val instruction = code.split(" ")
                 val maneuver = instruction.first()
                 val amount = instruction.last().toInt()
-                return ManoeuvringInstruction(Manoeuvr.valueOf(maneuver), amount)
+                return Instruction(Maneuver.valueOf(maneuver), amount)
             }
         }
     }
@@ -20,7 +20,7 @@ class Day2 : Day(2) {
     data class Position(val horizontal: Int, val depth: Int)
     data class PositionWithAim(val position: Position, val aim: Int)
 
-    enum class Manoeuvr {
+    enum class Maneuver {
         forward {
             override fun maneuver(from: Position, amount: Int): Position = Position(from.horizontal + amount, from.depth)
             override fun maneuverByAim(from: PositionWithAim, amount: Int): PositionWithAim {
@@ -44,7 +44,7 @@ class Day2 : Day(2) {
         abstract fun maneuverByAim(from: PositionWithAim, amount: Int): PositionWithAim
     }
 
-    private fun navigate(course: List<ManoeuvringInstruction>): Sequence<Position> = sequence {
+    private fun navigate(course: List<Instruction>): Sequence<Position> = sequence {
         var currentPosition = Position(0, 0)
         for (instruction in course) {
             val newPosition = instruction.maneuver.maneuver(currentPosition, instruction.amount)
@@ -53,7 +53,7 @@ class Day2 : Day(2) {
         }
     }
 
-    private fun navigateWithAim(course: List<ManoeuvringInstruction>): Sequence<PositionWithAim> = sequence {
+    private fun navigateWithAim(course: List<Instruction>): Sequence<PositionWithAim> = sequence {
         var currentPosition = PositionWithAim(Position(0, 0), 0)
         for (instruction in course) {
             val newPosition = instruction.maneuver.maneuverByAim(currentPosition, instruction.amount)
