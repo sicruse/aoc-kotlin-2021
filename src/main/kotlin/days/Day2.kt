@@ -22,32 +22,32 @@ class Day2 : Day(2) {
 
     enum class Maneuver {
         forward {
-            override fun maneuver(from: Position, amount: Int): Position = Position(from.horizontal + amount, from.depth)
-            override fun maneuverByAim(from: PositionWithAim, amount: Int): PositionWithAim {
+            override fun execute(from: Position, amount: Int): Position = Position(from.horizontal + amount, from.depth)
+            override fun execute(from: PositionWithAim, amount: Int): PositionWithAim {
                 val h = from.position.horizontal + amount
                 val d = from.position.depth + from.aim * amount
                 return PositionWithAim(Position(h, d), from.aim)
             }
         },
         down {
-            override fun maneuver(from: Position, amount: Int): Position = Position(from.horizontal, from.depth + amount)
-            override fun maneuverByAim(from: PositionWithAim, amount: Int): PositionWithAim =
+            override fun execute(from: Position, amount: Int): Position = Position(from.horizontal, from.depth + amount)
+            override fun execute(from: PositionWithAim, amount: Int): PositionWithAim =
                 PositionWithAim(from.position, from.aim + amount)
         },
         up {
-            override fun maneuver(from: Position, amount: Int): Position = Position(from.horizontal, from.depth - amount)
-            override fun maneuverByAim(from: PositionWithAim, amount: Int): PositionWithAim =
+            override fun execute(from: Position, amount: Int): Position = Position(from.horizontal, from.depth - amount)
+            override fun execute(from: PositionWithAim, amount: Int): PositionWithAim =
                 PositionWithAim(from.position, from.aim - amount)
         };
 
-        abstract fun maneuver(from: Position, amount: Int): Position
-        abstract fun maneuverByAim(from: PositionWithAim, amount: Int): PositionWithAim
+        abstract fun execute(from: Position, amount: Int): Position
+        abstract fun execute(from: PositionWithAim, amount: Int): PositionWithAim
     }
 
     private fun navigate(course: List<Instruction>): Sequence<Position> = sequence {
         var currentPosition = Position(0, 0)
         for (instruction in course) {
-            val newPosition = instruction.maneuver.maneuver(currentPosition, instruction.amount)
+            val newPosition = instruction.maneuver.execute(currentPosition, instruction.amount)
             currentPosition = newPosition
             yield(newPosition)
         }
@@ -56,7 +56,7 @@ class Day2 : Day(2) {
     private fun navigateWithAim(course: List<Instruction>): Sequence<PositionWithAim> = sequence {
         var currentPosition = PositionWithAim(Position(0, 0), 0)
         for (instruction in course) {
-            val newPosition = instruction.maneuver.maneuverByAim(currentPosition, instruction.amount)
+            val newPosition = instruction.maneuver.execute(currentPosition, instruction.amount)
             currentPosition = newPosition
             yield(newPosition)
         }
@@ -69,5 +69,6 @@ class Day2 : Day(2) {
 
     override fun partTwo(): Any {
         val finalPosition = navigateWithAim(course).last()
-        return finalPosition.position.horizontal.absoluteValue * finalPosition.position.depth.absoluteValue    }
+        return finalPosition.position.horizontal.absoluteValue * finalPosition.position.depth.absoluteValue
+    }
 }
