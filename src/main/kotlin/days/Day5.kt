@@ -19,20 +19,24 @@ class Day5 : Day(5) {
         constructor(line: Line) : this(start = line.start, end = line.end)
         constructor(text: String) : this(fromText(text))
 
-        val horizontal = start.y == end.y
-        val vertical = start.x == end.x
-        val diagonal = !(horizontal || vertical)
         val xRange = if (start.x <= end.x) (start.x .. end.x) else (start.x downTo end.x)
         val yRange = if (start.y <= end.y) (start.y .. end.y) else (start.y downTo end.y)
         val xyRange = xRange.zip(yRange)
 
+        enum class Orientation {horizontal, vertical, diagonal}
+        val orientation by lazy {
+            when {
+                start.y == end.y -> Orientation.horizontal
+                start.x == end.x -> Orientation.vertical
+                else -> Orientation.diagonal
+            }
+        }
+
         val points: Sequence<Point> = sequence {
-            if (horizontal) {
-                for (x in xRange) { yield( Point(x,start.y) ) }
-            } else if (vertical) {
-                for (y in yRange) { yield( Point(start.x,y) ) }
-            } else {
-                for ((x,y) in xyRange) { yield( Point(x,y) ) }
+            when (orientation) {
+                Orientation.horizontal -> for (x in xRange) { yield( Point(x,start.y) ) }
+                Orientation.vertical -> for (y in yRange) { yield( Point(start.x,y) ) }
+                Orientation.diagonal -> for ((x,y) in xyRange) { yield( Point(x,y) ) }
             }
         }
 
@@ -45,12 +49,12 @@ class Day5 : Day(5) {
     }
 
     class SeaFloor(vents: List<Line>) {
-        val points by lazy { vents.flatMap { it.points } }
+        private val points by lazy { vents.flatMap { it.points } }
         val danger by lazy { points.groupingBy { it }.eachCount().filter { it.value > 1 } }
     }
 
     override fun partOne(): Any {
-        val seafloor = SeaFloor( vents.filter { !it.diagonal } )
+        val seafloor = SeaFloor( vents.filter { it.orientation != Line.Orientation.diagonal } )
         return seafloor.danger.count()
     }
 
